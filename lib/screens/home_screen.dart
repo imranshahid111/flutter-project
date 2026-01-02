@@ -75,57 +75,156 @@ class _HomeScreenState extends State<HomeScreen> with SingleTickerProviderStateM
                   cartCount: appState.cartCount,
                 ),
               ),
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 100),
-                  child: Column(
-                    children: [
-                      SizedBox(height: 10),
-                      BannerCarousel(banners: banners),
-                      SizedBox(height: 10),
-                      CategoryGrid(categories: categories),
-                      SizedBox(height: 10),
-                      
-                      BannerProductSection(
-                        title: "Ultra Fresh",
-                        banner: {'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/splash/1742625689.jpg'},
-                        products: [
-                          { 'id': 'p1', 'title': 'Fresh Mutton Mix',    'price': 2399, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                          { 'id': 'p2', 'title': 'Fresh Cauliflower',   'price': 49,   'image': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800', 'badge': 'Best Seller' },
-                          { 'id': 'p3', 'title': 'Fresh Beef With Bone', 'price': 1299, 'image': 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800' },
-                          { 'id': 'p4', 'title': 'Tomatoes (1kg)',      'price': 119,  'image': 'https://images.unsplash.com/photo-1546470428-2b4f1a2c641c?q=80&w=800' },
-                        ],
-                        onAddToCart: (item) => appState.addToCart(Map<String, dynamic>.from(item)),
-                      ),
-                      
-                       BannerProductSection(
-                        title: "Grocery",
-                        banner: {'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/splash/1744283878.jpg'},
-                        products: [
-                          { 'id': 'g1', 'title': 'Atta 10kg',       'price': 1999, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                          { 'id': 'g2', 'title': 'Cooking Oil 3L',  'price': 2450, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                          { 'id': 'g3', 'title': 'Sugar 5kg',       'price': 720,  'image': 'https://images.unsplash.com/photo-1615485921621-43ad2825d3cf?q=80&w=800' },
-                          { 'id': 'g4', 'title': 'Rice 5kg',        'price': 1850, 'image': 'https://images.unsplash.com/photo-1517685352821-92cf88aee5a5?q=80&w=800' },
-                        ],
-                        onAddToCart: (item) => appState.addToCart(Map<String, dynamic>.from(item)),
-                      ),
-                      
-                       BannerProductSection(
-                        title: "Dry Fruits",
-                        banner: {'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/splash/1754738547.jpg'},
-                        products: [
-                          { 'id': 'd1', 'title': 'Almonds 500g',   'price': 1499, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                          { 'id': 'd2', 'title': 'Cashews 500g',   'price': 1799, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                          { 'id': 'd3', 'title': 'Walnuts 500g',   'price': 1299, 'image': 'https://images.unsplash.com/photo-1615485737651-ae73f45e15b0?q=80&w=800' },
-                          { 'id': 'd4', 'title': 'Raisins 500g',   'price': 699,  'image': 'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=800' },
-                        ],
-                        onAddToCart: (item) => appState.addToCart(Map<String, dynamic>.from(item)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
+            SliverToBoxAdapter(
+  child: Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      const SizedBox(height: 10),
+
+      // 🔥 FULL WIDTH — DO NOT WRAP IN PADDING
+      BannerCarousel(banners: banners),
+
+      const SizedBox(height: 10),
+
+      // Everything BELOW can have padding safely
+      Padding(
+        padding: const EdgeInsets.only(bottom: 100),
+        child: Column(
+          children: [
+            CategoryGrid(categories: categories),
+            const SizedBox(height: 10),
+
+            BannerProductSection(
+              title: "Ultra Fresh",
+              banner: {
+                'uri':
+                    'https://g-cdn.blinkco.io/ordering-system/55544/splash/1742625689.jpg'
+              },
+              products: [
+                {
+                  'id': 'p1',
+                  'title': 'Fresh Mutton Mix',
+                  'price': 2399,
+                  'image':
+                      'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png'
+                },
+                {
+                  'id': 'p2',
+                  'title': 'Fresh Cauliflower',
+                  'price': 49,
+                  'image':
+                      'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800',
+                  'badge': 'Best Seller'
+                },
+                {
+                  'id': 'p3',
+                  'title': 'Fresh Beef With Bone',
+                  'price': 1299,
+                  'image':
+                      'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800'
+                },
+                {
+                  'id': 'p4',
+                  'title': 'Tomatoes (1kg)',
+                  'price': 119,
+                  'image':
+                      'https://images.unsplash.com/photo-1546470428-2b4f1a2c641c?q=80&w=800'
+                },
+              ],
+              onAddToCart: (item) =>
+                  appState.addToCart(Map<String, dynamic>.from(item)),
+            ),
+
+            const SizedBox(height: 10),
+
+            BannerProductSection(
+              title: "Grocery",
+              banner: {
+                'uri':
+                    'https://g-cdn.blinkco.io/ordering-system/55544/splash/1744283878.jpg'
+              },
+              products: [
+                {
+                  'id': 'g1',
+                  'title': 'Atta 10kg',
+                  'price': 1999,
+                  'image':
+                      'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png'
+                },
+                {
+                  'id': 'g2',
+                  'title': 'Cooking Oil 3L',
+                  'price': 2450,
+                  'image':
+                      'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png'
+                },
+                {
+                  'id': 'g3',
+                  'title': 'Sugar 5kg',
+                  'price': 720,
+                  'image':
+                      'https://images.unsplash.com/photo-1615485921621-43ad2825d3cf?q=80&w=800'
+                },
+                {
+                  'id': 'g4',
+                  'title': 'Rice 5kg',
+                  'price': 1850,
+                  'image':
+                      'https://images.unsplash.com/photo-1517685352821-92cf88aee5a5?q=80&w=800'
+                },
+              ],
+              onAddToCart: (item) =>
+                  appState.addToCart(Map<String, dynamic>.from(item)),
+            ),
+
+            const SizedBox(height: 10),
+
+            BannerProductSection(
+              title: "Dry Fruits",
+              banner: {
+                'uri':
+                    'https://g-cdn.blinkco.io/ordering-system/55544/splash/1754738547.jpg'
+              },
+              products: [
+                {
+                  'id': 'd1',
+                  'title': 'Almonds 500g',
+                  'price': 1499,
+                  'image':
+                      'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png'
+                },
+                {
+                  'id': 'd2',
+                  'title': 'Cashews 500g',
+                  'price': 1799,
+                  'image':
+                      'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png'
+                },
+                {
+                  'id': 'd3',
+                  'title': 'Walnuts 500g',
+                  'price': 1299,
+                  'image':
+                      'https://images.unsplash.com/photo-1615485737651-ae73f45e15b0?q=80&w=800'
+                },
+                {
+                  'id': 'd4',
+                  'title': 'Raisins 500g',
+                  'price': 699,
+                  'image':
+                      'https://images.unsplash.com/photo-1464965911861-746a04b4bca6?q=80&w=800'
+                },
+              ],
+              onAddToCart: (item) =>
+                  appState.addToCart(Map<String, dynamic>.from(item)),
+            ),
+          ],
+        ),
+      ),
+    ],
+  ),
+),
+   ],
           ),
           
           // Drawer Overlay

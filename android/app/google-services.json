@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "302495854234",
+    "project_id": "rubaika-93c66",
+    "storage_bucket": "rubaika-93c66.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:302495854234:android:db79c32a119584a3657923",
+        "android_client_info": {
+          "package_name": "com.example.rubaika_cashcarry"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBrsR1i8XE6dlX3qelvaO6c_w7pYiD1g2E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

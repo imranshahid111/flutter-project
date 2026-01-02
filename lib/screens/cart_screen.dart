@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import '../components/common_image.dart';
 import '../providers/app_state.dart';
 
 class CartScreen extends StatelessWidget {
@@ -14,7 +15,7 @@ class CartScreen extends StatelessWidget {
     final delivery = appState.delivery;
 
     return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      backgroundColor: Thee.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: Text('My Cart', style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Theme.of(context).primaryColor,
@@ -94,7 +95,7 @@ class CartScreen extends StatelessWidget {
                       Container(
                         width: 72, height: 72,
                         decoration: BoxDecoration(color: Colors.grey[200], borderRadius: BorderRadius.circular(10)),
-                        child: CachedNetworkImage(imageUrl: item['image'], fit: BoxFit.cover),
+                        child: CommonImage(imageUrl: item['image'], fit: BoxFit.cover),
                       ),
                       SizedBox(width: 10),
                       Expanded(

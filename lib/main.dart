@@ -3,15 +3,33 @@ import 'package:provider/provider.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:feather_icons/feather_icons.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'screens/login_screen.dart';
+import 'services/firebase_service.dart';
+import 'firebase_options.dart';
+import 'components/common_image.dart';
+import 'data/static_data.dart';
 
 // ==========================================
 // MAIN ENTRY POINT
 // ==========================================
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    print('Starting Firebase Initialization...');
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    ); 
+    print('Firebase Initialized Successfully');
+  } catch (e) {
+    print('Firebase Initialization Failed: $e');
+  }
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AppState()),
+        Provider(create: (_) => FirebaseService()),
       ],
       child: MyApp(),
     ),
@@ -19,7 +37,7 @@ void main() {
 }
 
 // ==========================================
-// MAIN APPLICATION WIDGET
+// MAIN APPLICATION WIDGET & AUTH GATE
 // ==========================================
 class MyApp extends StatelessWidget {
   @override
@@ -45,9 +63,20 @@ class MyApp extends StatelessWidget {
           surface: Colors.white,
           onSurface: Colors.black87,
         ),
-        fontFamily: 'Roboto', // Or system default
+        fontFamily: 'Roboto',
       ),
-      home: HomeScreen(),
+      home: StreamBuilder<User?>(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          }
+          if (snapshot.hasData) {
+            return HomeScreen();
+          }
+          return LoginScreen();
+        },
+      ),
     );
   }
 }
@@ -90,30 +119,16 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  // --- DATA ---
-  final List<Map<String, String>> banners = [
-    {'id': '1', 'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/web_splash/1756461224.jpg'},
-    {'id': '2', 'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/web_splash/1754654789.jpg'},
-    {'id': '3', 'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/web_splash/1754653347.jpg'},
-  ];
-
-  final List<Map<String, dynamic>> categories = [
-    { 'title': 'Ultra Fresh',        'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756978180753.jpg' },
-    { 'title': 'Grocery',            'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756978118134.jpg' },
-    { 'title': 'Dry Fruits',         'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756977694128.jpg' },
-    { 'title': 'Breakfast & Dairy',  'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756978102069.jpg' },
-    { 'title': 'Frozen Food',        'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756978084926.jpg' },
-    { 'title': 'Baby Products',      'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756978135150.jpg' },
-    { 'title': 'Health & Beauty',    'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756978150248.jpg' },
-    { 'title': 'Snacks',             'image': 'https://g-cdn.blinkco.io/ordering-system/55544/menu_image/1756978068847.jpg' },
-  ];
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
 
     return Scaffold(
-      // 1. Standard AppBar instead of custom Sliver Header
       appBar: AppBar(
         title: Text('Rubaika'),
         actions: [
@@ -121,13 +136,16 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: Icon(FeatherIcons.search),
             onPressed: () {},
           ),
-          // Cart Icon with Badge
+          IconButton(
+            icon: Icon(FeatherIcons.logOut),
+            onPressed: () => FirebaseAuth.instance.signOut(),
+          ),
           Stack(
             children: [
               IconButton(
                 icon: Icon(FeatherIcons.shoppingCart),
                 onPressed: () {
-                   // Navigate to cart (placeholder)
+                   // Navigate to cart
                 },
               ),
               if (appState.cartCount > 0)
@@ -148,7 +166,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       
-      // 2. Standard Drawer
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -164,31 +181,29 @@ class _HomeScreenState extends State<HomeScreen> {
                      child: Image.asset('assets/rubaika_logo.png', height: 50, errorBuilder: (c,e,s) => Icon(Icons.store)),
                    ),
                    SizedBox(height: 10),
-                   Text('Welcome User', style: TextStyle(color: Colors.white, fontSize: 18)),
+                   Text(FirebaseAuth.instance.currentUser?.email ?? 'Welcome User', style: TextStyle(color: Colors.white, fontSize: 16)),
                 ],
               ),
             ),
             ListTile(leading: Icon(FeatherIcons.home), title: Text('Home'), onTap: () {}),
             ListTile(leading: Icon(FeatherIcons.grid), title: Text('Categories'), onTap: () {}),
-            ListTile(leading: Icon(FeatherIcons.heart), title: Text('Favourites'), onTap: () {}),
-            ListTile(leading: Icon(FeatherIcons.shoppingCart), title: Text('My Cart'), onTap: () {}),
+            ListTile(leading: Icon(FeatherIcons.power), title: Text('Logout'), onTap: () => FirebaseAuth.instance.signOut()),
           ],
         ),
       ),
 
-      // 3. Simple Body with SingleScrollView
       body: SingleChildScrollView(
         child: Column(
           children: [
             SizedBox(height: 10),
             
             // Banner Carousel
-            BannerCarousel(banners: banners),
+            BannerCarousel(banners: StaticData.banners),
             
             SizedBox(height: 10),
             
             // Category Grid
-            CategoryGrid(categories: categories),
+            CategoryGrid(categories: StaticData.categories),
             
             SizedBox(height: 10),
             
@@ -196,24 +211,14 @@ class _HomeScreenState extends State<HomeScreen> {
             BannerProductSection(
               title: "Ultra Fresh",
               banner: {'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/splash/1742625689.jpg'},
-              products: [
-                { 'id': 'p1', 'title': 'Fresh Mutton Mix',    'price': 2399, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                { 'id': 'p2', 'title': 'Fresh Cauliflower',   'price': 49,   'image': 'https://images.unsplash.com/photo-1540420773420-3366772f4999?q=80&w=800', 'badge': 'Best Seller' },
-                { 'id': 'p3', 'title': 'Fresh Beef With Bone', 'price': 1299, 'image': 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800' },
-                { 'id': 'p4', 'title': 'Tomatoes (1kg)',      'price': 119,  'image': 'https://images.unsplash.com/photo-1546470428-2b4f1a2c641c?q=80&w=800' },
-              ],
+              products: StaticData.freshProducts,
               onAddToCart: (item) => appState.addToCart(Map<String, dynamic>.from(item)),
             ),
 
             BannerProductSection(
               title: "Grocery",
               banner: {'uri': 'https://g-cdn.blinkco.io/ordering-system/55544/splash/1744283878.jpg'},
-              products: [
-                { 'id': 'g1', 'title': 'Atta 10kg',       'price': 1999, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                { 'id': 'g2', 'title': 'Cooking Oil 3L',  'price': 2450, 'image': 'https://em-cdn.eatmubarak.pk/55544/gallery/MENU%20BONELESS%20HANDI%20500GM.png' },
-                { 'id': 'g3', 'title': 'Sugar 5kg',       'price': 720,  'image': 'https://images.unsplash.com/photo-1615485921621-43ad2825d3cf?q=80&w=800' },
-                { 'id': 'g4', 'title': 'Rice 5kg',        'price': 1850, 'image': 'https://images.unsplash.com/photo-1517685352821-92cf88aee5a5?q=80&w=800' },
-              ],
+              products: StaticData.groceryProducts,
               onAddToCart: (item) => appState.addToCart(Map<String, dynamic>.from(item)),
             ),
 
@@ -246,10 +251,10 @@ class BannerCarousel extends StatelessWidget {
       items: banners.map((banner) {
          return Container(
             margin: EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
+            child: ClipRRect(
               borderRadius: BorderRadius.circular(16),
-              image: DecorationImage(
-                image: NetworkImage(banner['uri']), // Simple NetworkImage
+              child: CommonImage(
+                imageUrl: banner['uri'] ?? '',
                 fit: BoxFit.cover,
               ),
             ),
@@ -306,15 +311,13 @@ class CategoryGrid extends StatelessWidget {
                         color: pastelColors[idx % pastelColors.length],
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: CachedNetworkImage(
-                        imageUrl: cat['image'],
+                      child: CommonImage(
+                        imageUrl: cat['image'] ?? '',
                         fit: BoxFit.contain,
-                        placeholder: (context, url) => Center(child: Icon(Icons.image, size: 20, color: Colors.grey)),
-                        errorWidget: (context, url, error) => Icon(Icons.error, size: 20),
                       ),
                     ),
                     SizedBox(height: 4),
-                    Text(cat['title'], style: TextStyle(fontSize: 11), textAlign: TextAlign.center, maxLines: 2),
+                    Text(cat['title'] ?? '', style: TextStyle(fontSize: 11), textAlign: TextAlign.center, maxLines: 2),
                   ],
                 ),
               );
@@ -367,14 +370,14 @@ class _BannerProductSectionState extends State<BannerProductSection> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(item['title'], style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                  Text(item['title'] ?? 'Product', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                   SizedBox(height: 20),
                   Row(
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: CachedNetworkImage(
-                          imageUrl: item['image'],
+                        child: CommonImage(
+                          imageUrl: item['image'] ?? '',
                           width: 100,
                           height: 100,
                           fit: BoxFit.cover,
@@ -453,8 +456,8 @@ class _BannerProductSectionState extends State<BannerProductSection> {
              padding: EdgeInsets.symmetric(horizontal: 16),
              child: ClipRRect(
                borderRadius: BorderRadius.circular(12),
-               child: CachedNetworkImage(
-                 imageUrl: widget.banner!['uri'],
+               child: CommonImage(
+                 imageUrl: widget.banner!['uri'] ?? '',
                  height: 100,
                  width: double.infinity,
                  fit: BoxFit.cover,
@@ -515,11 +518,9 @@ class ProductCard extends StatelessWidget {
                    height: 110,
                    width: double.infinity,
                    color: Colors.grey[100],
-                   child: CachedNetworkImage(
-                     imageUrl: item['image'],
+                   child: CommonImage(
+                     imageUrl: item['image'] ?? '',
                      fit: BoxFit.contain,
-                     placeholder: (context, url) => Center(child: CircularProgressIndicator()),
-                     errorWidget: (context, url, err) => Icon(Icons.error),
                    ),
                  ),
                  if (item['badge'] != null)
@@ -541,12 +542,12 @@ class ProductCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(item['title'], maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
+                Text(item['title'] ?? 'Product', maxLines: 2, overflow: TextOverflow.ellipsis, style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13)),
                 SizedBox(height: 4),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text('Rs ${item['price']}', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
+                    Text('Rs ${item['price'] ?? 0}', style: TextStyle(color: Theme.of(context).primaryColor, fontWeight: FontWeight.bold)),
                     
                     // Circular Add Button
                     InkWell(

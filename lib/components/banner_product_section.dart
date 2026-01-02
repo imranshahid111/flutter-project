@@ -3,6 +3,7 @@ import 'package:feather_icons/feather_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'product_card.dart';
+import 'common_image.dart';
 
 class BannerProductSection extends StatefulWidget {
   final String title;
@@ -65,7 +66,7 @@ class _BannerProductSectionState extends State<BannerProductSection> {
                           borderRadius: BorderRadius.circular(12),
                           border: Border.all(color: Colors.grey.shade300),
                         ),
-                        child: CachedNetworkImage(imageUrl: item['image']),
+                        child: CommonImage(imageUrl: item['image']),
                       ),
                       SizedBox(width: 16),
                       Expanded(
@@ -177,10 +178,9 @@ class _BannerProductSectionState extends State<BannerProductSection> {
                   border: Border.all(color: Colors.grey.shade200),
                 ),
                 clipBehavior: Clip.hardEdge,
-                child: CachedNetworkImage(
+                child: CommonImage(
                   imageUrl: widget.banner!['uri'],
                   fit: BoxFit.cover,
-                  placeholder: (context, url) => Container(color: Colors.grey[100]),
                 ),
               ),
             ),

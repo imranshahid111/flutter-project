@@ -1,0 +1,50 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper function to check if user is signed in
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Products: Everyone can read, only auth users (admins typically) can write
+    // For this simple app, we might just allow all writes if backend admin isn't built yet,
+    // but better to restrict to auth users.
+    match /products/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    
+    // Banners
+    match /banners/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+
+    // Categories
+    match /categories/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    
+    // Fresh & Grocery Collections (if used directly)
+    match /fresh/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    match /grocery/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    
+    // Sections
+    match /sections/{document=**} {
+      allow read: if true;
+      allow write: if isSignedIn();
+    }
+    
+    // User data: Users can read/write their own data
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

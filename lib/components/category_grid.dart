@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
+import 'common_image.dart';
 
 class CategoryGrid extends StatelessWidget {
   final List<dynamic> categories;
@@ -75,11 +77,9 @@ class CategoryGrid extends StatelessWidget {
                 border: Border.all(color: Colors.grey.shade200),
               ),
               padding: EdgeInsets.all(8),
-              child: CachedNetworkImage(
+              child: CommonImage(
                 imageUrl: cat['image'],
                 fit: BoxFit.contain,
-                placeholder: (context, url) => Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                errorWidget: (context, url, error) => Icon(Icons.error, size: 20),
               ),
             ),
             SizedBox(height: 5),
@@ -164,7 +164,7 @@ class CategoryGrid extends StatelessWidget {
                              borderRadius: BorderRadius.circular(12),
                            ),
                            padding: EdgeInsets.all(12),
-                           child: CachedNetworkImage(
+                           child: CommonImage(
                              imageUrl: cat['image'],
                              fit: BoxFit.contain,
                            ),

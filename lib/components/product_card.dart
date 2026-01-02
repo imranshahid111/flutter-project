@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'common_image.dart';
 
 class ProductCard extends StatelessWidget {
   final dynamic item;
@@ -47,11 +48,9 @@ class ProductCard extends StatelessWidget {
                   width: width,
                   color: Color(0xFFF3F4F6),
                   padding: const EdgeInsets.all(12),
-                  child: CachedNetworkImage(
+                  child: CommonImage( // Custom widget for caching + web compatibility
                     imageUrl: item['image'],
                     fit: BoxFit.contain,
-                    placeholder: (context, url) => Center(child: CircularProgressIndicator(strokeWidth: 2)),
-                    errorWidget: (context, url, error) => Icon(Icons.error, size: 20, color: Colors.grey),
                   ),
                 ),
                 if (item['badge'] != null)
